@@ -20,6 +20,7 @@ To install this on your rMPP:
 - Install xovi ([instructions](https://github.com/asivery/rmpp-xovi-extensions/blob/master/INSTALL.MD))
 - Download the `extensions.zip` release file from the aforementioned page
 - Copy over the `qt-resource-rebuilder.so` file from the zip file into `/home/root/xovi/extensions.d`
+- Follow the instructions on how to rebuild the hashtab ([instructions](https://github.com/asivery/rmpp-xovi-extensions/blob/master/INSTALL.MD))
 - Download `libliterm.so` from this repository's releases and copy it over to the same directory
 - Run `xovi/start` over SSH to restart everything.
 
@@ -48,15 +49,6 @@ them as possible.
 literm is implemented using QML to provide a fast, and fluid user interface.
 The terminal emulator side is in C++ (also using Qt). It is exposed as a plugin
 to allow reuse in other applications or contexts.
-
-# building
-
-    qmake && make
-
-.. should get you most of the way there, assuming you have qmake & Qt easily
-available. After that, run:
-
-    ./literm
 
 # history
 
