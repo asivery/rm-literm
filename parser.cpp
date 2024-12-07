@@ -25,7 +25,6 @@
 // Whether or not such a rewrite will ever be finished, who knows...
 
 #include "parser.h"
-#include "catch.hpp"
 #include <QDebug>
 
 template<typename T>
@@ -105,14 +104,14 @@ private:
 };
 Q_GLOBAL_STATIC(ColourTable, colourTable);
 
-QRgb Parser::fetchDefaultFgColor()
+QRgb Parser::fetchDefaultFgColor(bool backgroundWhite)
 {
-    return colourTable()->at(7);
+    return colourTable()->at(backgroundWhite ? 0 : 7);
 }
 
-QRgb Parser::fetchDefaultBgColor()
+QRgb Parser::fetchDefaultBgColor(bool backgroundWhite)
 {
-    return colourTable()->at(0);
+    return colourTable()->at(backgroundWhite ? 7 : 0);
 }
 
 bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, QString& errorString)
@@ -322,97 +321,3 @@ bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, 
     return true;
 }
 
-static void requireParseFailure(const QList<int>& params, const char* expectedError)
-{
-    Parser::TextAttributes attribs = Parser::TextAttribute::NoAttributes;
-    QRgb fg = Qt::red;
-    QRgb bg = Qt::red;
-    QRgb dfg = Qt::red;
-    QRgb dbg = Qt::red;
-    Parser::SGRParserState state(fg, bg, dfg, dbg, attribs);
-    QString errorString;
-    REQUIRE(!Parser::handleSGR(state, params, errorString));
-    //qDebug() << errorString << expectedError;
-    REQUIRE(errorString == expectedError);
-    REQUIRE(state.colours.fg == Qt::red);
-    REQUIRE(state.colours.bg == Qt::red);
-    REQUIRE(attribs == Parser::TextAttribute::NoAttributes);
-}
-
-static void requireParseSuccess(const QList<int>& params, const QRgb& expectedFg, const QRgb& expectedBg, const char* expectedWarning)
-{
-    Parser::TextAttributes attribs = Parser::TextAttribute::NoAttributes;
-    QRgb fg = Qt::red;
-    QRgb bg = Qt::red;
-    QRgb dfg = Qt::red;
-    QRgb dbg = Qt::red;
-    Parser::SGRParserState state(fg, bg, dfg, dbg, attribs);
-    QString errorString;
-    REQUIRE(Parser::handleSGR(state, params, errorString));
-    //qDebug() << errorString << expectedWarning;
-    REQUIRE(errorString == expectedWarning);
-    //qDebug() << QColor(state.colours.fg) << QColor(expectedFg);
-    REQUIRE(state.colours.fg == expectedFg);
-    REQUIRE(state.colours.bg == expectedBg);
-    REQUIRE(attribs == Parser::TextAttribute::NoAttributes);
-}
-
-TEST_CASE("SGR: Invalid", "[terminal] [sgr]")
-{
-    requireParseFailure({ 1024, 3 }, "got unknown SGR: 1024");
-    requireParseFailure({ 48, 3 }, "got unknown extended SGR: 3");
-}
-
-TEST_CASE("SGR: 16bit: invalid", "[terminal] [sgr] [16bit]")
-{
-    // Missing parameters
-    requireParseFailure({ 48, 2, 0, 0 }, "got invalid 16bit SGR with too few parameters: 2");
-    requireParseFailure({ 48, 2, 0 }, "got invalid 16bit SGR with too few parameters: 1");
-    requireParseFailure({ 48, 2 }, "got invalid 16bit SGR with too few parameters: 0");
-
-    // All invalid => parse failure.
-    requireParseFailure({ 48, 2, -1, -1, -1 }, "got invalid 16bit SGR with out-of-range r: -1");
-    requireParseFailure({ 48, 2, 256, 256, 256 }, "got invalid 16bit SGR with out-of-range r: 256");
-
-    // Any one component valid => parse failure.
-    requireParseFailure({ 48, 2, 256, 0, 0 }, "got invalid 16bit SGR with out-of-range r: 256");
-    requireParseFailure({ 48, 2, 0, 256, 0 }, "got invalid 16bit SGR with out-of-range g: 256");
-    requireParseFailure({ 48, 2, 0, 0, 256 }, "got invalid 16bit SGR with out-of-range b: 256");
-}
-
-TEST_CASE("SGR: 16bit: Foreground", "[terminal] [sgr] [16bit]")
-{
-    requireParseSuccess({ 38, 2, 0, 0, 0 }, QColor(Qt::black).rgb(), Qt::red, "");
-    requireParseSuccess({ 38, 2, 255, 0, 0 }, QColor(Qt::red).rgb(), Qt::red, "");
-    requireParseSuccess({ 38, 2, 0, 255, 0 }, QColor(Qt::green).rgb(), Qt::red, "");
-    requireParseSuccess({ 38, 2, 0, 0, 255 }, QColor(Qt::blue).rgb(), Qt::red, "");
-}
-
-TEST_CASE("SGR: 16bit: Background", "[terminal] [sgr]")
-{
-    requireParseSuccess({ 48, 2, 0, 0, 0 }, Qt::red, QColor(Qt::black).rgb(), "");
-    requireParseSuccess({ 48, 2, 255, 0, 0 }, Qt::red, QColor(Qt::red).rgb(), "");
-    requireParseSuccess({ 48, 2, 0, 255, 0 }, Qt::red, QColor(Qt::green).rgb(), "");
-    requireParseSuccess({ 48, 2, 0, 0, 255 }, Qt::red, QColor(Qt::blue).rgb(), "");
-}
-
-TEST_CASE("SGR: 256color: invalid", "[terminal] [sgr] [256color]")
-{
-    requireParseFailure({ 38, 5 }, "got invalid 256color SGR (no color)");
-    requireParseFailure({ 38, 5, -1 }, "got invalid 256color SGR with out-of-range color: -1");
-    requireParseFailure({ 38, 5, 256 }, "got invalid 256color SGR with out-of-range color: 256");
-}
-
-TEST_CASE("SGR: 256color: Foreground", "[terminal] [sgr] [256color]")
-{
-    requireParseSuccess({ 38, 5, 0 }, QColor(Qt::black).rgb(), Qt::red, "");
-    requireParseSuccess({ 38, 5, 9 }, QColor(Qt::red).rgb(), Qt::red, "");
-    requireParseSuccess({ 38, 5, 10 }, QColor(Qt::green).rgb(), Qt::red, "");
-}
-
-TEST_CASE("SGR: 256color: Background", "[terminal] [256color]")
-{
-    requireParseSuccess({ 48, 5, 0 }, Qt::red, QColor(Qt::black).rgb(), "");
-    requireParseSuccess({ 48, 5, 9 }, Qt::red, QColor(Qt::red).rgb(), "");
-    requireParseSuccess({ 48, 5, 10 }, Qt::red, QColor(Qt::green).rgb(), "");
-}

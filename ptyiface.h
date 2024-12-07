@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QSize>
 #include <QSocketNotifier>
-#include <QTextCodec>
+#include <QStringConverter>
 
 class Terminal;
 
@@ -50,10 +50,6 @@ private slots:
 
 signals:
     void dataAvailable();
-    void hangupReceived();
-
-private slots:
-    void checkForDeadPids();
 
 private:
     Q_DISABLE_COPY(PtyIFace)
@@ -69,13 +65,10 @@ private:
 
     QSocketNotifier* iReadNotifier;
 
-    QTextCodec* iTextCodec;
+    QStringDecoder iTextCodec;
+    QStringEncoder oTextCodec;
 
     QString m_pendingData;
-
-    static void sighandler(int sig);
-    static std::vector<int> m_deadPids;
-    static bool m_initializedSignalHandler;
 };
 
 #endif // PTYIFACE_H

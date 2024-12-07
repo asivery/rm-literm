@@ -1,13 +1,13 @@
-QT = core gui qml quick
+QT = core gui qml quick 
 
 CONFIG -= app_bundle
 
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-CONFIG += link_pkgconfig
+CONFIG += shared link_pkgconfig
 
-TEMPLATE = app
+TEMPLATE = lib
 TARGET = literm
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -21,10 +21,10 @@ HEADERS += \
     version.h \
     utilities.h \
     keyloader.h \
-    parser.h \
-    catch.hpp
+    parser.h
 
 SOURCES += \
+    xoviout/xovi.c \
     main.cpp \
     terminal.cpp \
     textrender.cpp \
@@ -44,19 +44,6 @@ OTHER_FILES += \
     qml/mobile/UrlWindow.qml \
     qml/mobile/LayoutWindow.qml \
     qml/mobile/PopupWindow.qml
-
-OTHER_FILES += \
-    qml/desktop/Main.qml \
-    qml/desktop/Keyboard.qml \
-    qml/desktop/Key.qml \
-    qml/desktop/Button.qml \
-    qml/desktop/MenuLiterm.qml \
-    qml/desktop/NotifyWin.qml \
-    qml/desktop/UrlWindow.qml \
-    qml/desktop/LayoutWindow.qml \
-    qml/desktop/PopupWindow.qml \
-    qml/desktop/TabView.qml \
-    qml/desktop/TabBar.qml
 
 RESOURCES += \
     resources.qrc

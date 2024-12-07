@@ -5,3 +5,6 @@ moc_*
 /literm
 /apptest/apptest
 qrc_resources.cpp
+/xoviout
+/libliterm*
+*.pure.qmd

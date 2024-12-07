@@ -1,18 +1,5 @@
 <RCC>
-    <qresource prefix="/">
-        <file>qml/desktop/Main.qml</file>
-        <file>qml/desktop/Key.qml</file>
-        <file>qml/desktop/Keyboard.qml</file>
-        <file>qml/desktop/Button.qml</file>
-        <file>qml/desktop/ScrollDecorator.qml</file>
-        <file>qml/desktop/MenuLiterm.qml</file>
-        <file>qml/desktop/NotifyWin.qml</file>
-        <file>qml/desktop/PopupWindow.qml</file>
-        <file>qml/desktop/UrlWindow.qml</file>
-        <file>qml/desktop/LayoutWindow.qml</file>
-        <file>qml/desktop/TabView.qml</file>
-        <file>qml/desktop/TabBar.qml</file>
-
+    <qresource prefix="/literm/">
         <file>qml/mobile/Main.qml</file>
         <file>qml/mobile/Key.qml</file>
         <file>qml/mobile/Keyboard.qml</file>
@@ -25,6 +12,9 @@
         <file>qml/mobile/UrlWindow.qml</file>
         <file>qml/mobile/LayoutWindow.qml</file>
 
+        <file>hack.ttf</file>
+
+        <file>icons/terminal</file>
         <file>icons/backspace.png</file>
         <file>icons/down.png</file>
         <file>icons/enter.png</file>

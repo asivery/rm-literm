@@ -1,3 +1,30 @@
+# porting
+
+This version of literm has been ported to work with the rMPP tablet. It uses [xovi](https://github.com/asivery/xovi)
+to load itself into xochitl. It depends on the [qt-resource-rebuilder](https://github.com/asivery/rmpp-xovi-extensions/) extension.
+
+All the code responsible for merging into the system UI is stored in `literm.qmd`.
+
+The font I added instead of the system default is [hack](https://github.com/source-foundry/Hack)
+
+To build, run `make.sh` after setting up the XOVI_ROOT environmental variable, and sourcing the toolchain's env. file.
+
+Since this project modifies the rM's UI, it is not version agnostic. To update from one version to another, change the values in `literm.qmd`.
+
+This branch is built for `3.15.4.2`. Feel free to try it on other versions, to see if it works.
+
+# installation
+
+To install this on your rMPP:
+
+- Install xovi ([instructions](https://github.com/asivery/rmpp-xovi-extensions/blob/master/INSTALL.MD))
+- Download the `extensions.zip` release file from the aforementioned page
+- Copy over the `qt-resource-rebuilder.so` file from the zip file into `/home/root/xovi/extensions.d`
+- Download `libliterm.so` from this repository's releases and copy it over to the same directory
+- Run `xovi/start` over SSH to restart everything.
+
+I am not responsible for any damages you might end up doing to your device.
+
 # about
 
 literm is a terminal emulator for Linux first and foremost, but it is also

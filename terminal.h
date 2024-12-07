@@ -140,6 +140,8 @@ public:
     QRect selection() const;
     void clearSelection();
 
+    void setBackgroundWhite(bool backgroundWhite);
+
     int rows() const;
     int columns() const;
 
@@ -216,6 +218,7 @@ private:
     bool iNewLineMode;
     bool m_inverseVideoMode;
     bool m_bracketedPasteMode;
+    bool backgroundWhite;
 
     int iMarginTop;
     int iMarginBottom;

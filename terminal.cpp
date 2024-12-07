@@ -26,7 +26,6 @@
 #    include <QSignalSpy>
 #endif
 
-#include "catch.hpp"
 #include "parser.h"
 #include "ptyiface.h"
 #include "terminal.h"
@@ -79,15 +78,12 @@ Terminal::Terminal(QObject* parent)
     , iBackBufferScrollPos(0)
     , m_dispatch_timer(0)
 {
+    setBackgroundWhite(Util::instance()->backgroundWhite());
     zeroChar.c = ' ';
-    zeroChar.bgColor = Parser::fetchDefaultBgColor();
-    zeroChar.fgColor = Parser::fetchDefaultFgColor();
     zeroChar.attrib = TermChar::NoAttributes;
 
     escape = -1;
 
-    iTermAttribs.currentFgColor = Parser::fetchDefaultFgColor();
-    iTermAttribs.currentBgColor = Parser::fetchDefaultBgColor();
     iTermAttribs.currentAttrib = TermChar::NoAttributes;
     iTermAttribs.cursorPos = QPoint(0, 0);
     iMarginBottom = 0;
@@ -110,6 +106,16 @@ void Terminal::init()
         qFatal("pty failure");
     connect(m_pty, SIGNAL(dataAvailable()), this, SLOT(onDataAvailable()));
     connect(m_pty, SIGNAL(hangupReceived()), this, SIGNAL(hangupReceived()));
+}
+
+void Terminal::setBackgroundWhite(bool backgroundWhite)
+{
+    zeroChar.bgColor = Parser::fetchDefaultBgColor(backgroundWhite);
+    zeroChar.fgColor = Parser::fetchDefaultFgColor(backgroundWhite);
+    iTermAttribs.currentFgColor = Parser::fetchDefaultFgColor(backgroundWhite);
+    iTermAttribs.currentBgColor = Parser::fetchDefaultBgColor(backgroundWhite);
+    this->backgroundWhite = backgroundWhite;
+    this->clearAll(true);
 }
 
 void Terminal::onDataAvailable()
@@ -418,7 +424,7 @@ void Terminal::keyPress(int key, int modifiers, const QString& text)
 
         if (asciiVal >= 0x41 && asciiVal <= 0x5f) {
             // Turn uppercase characters into their control code equivalent
-            toWrite.append(asciiVal - 0x40);
+            toWrite.append(QChar(asciiVal - 0x40));
         } else {
             qWarning() << "Ctrl+" << c << " does not translate into a control code";
         }
@@ -939,7 +945,7 @@ void Terminal::ansiSequence(const QString& seq)
             params.append(0);
         {
             Parser::TextAttributes attribs = convert(iTermAttribs.currentAttrib);
-            Parser::SGRParserState state(iTermAttribs.currentFgColor, iTermAttribs.currentBgColor, Parser::fetchDefaultFgColor(), Parser::fetchDefaultBgColor(), attribs);
+            Parser::SGRParserState state(iTermAttribs.currentFgColor, iTermAttribs.currentBgColor, Parser::fetchDefaultFgColor(backgroundWhite), Parser::fetchDefaultBgColor(backgroundWhite), attribs);
             QString errorString;
             if (!Parser::handleSGR(state, params, errorString)) {
                 qWarning() << "Error parsing SGR: " << params << extra << " -- " << errorString;
@@ -1467,8 +1473,7 @@ void Terminal::resetTerminal(ResetMode mode)
         iTermAttribs.cursorPos = QPoint(1, 1);
     }
 
-    iTermAttribs.currentFgColor = Parser::fetchDefaultFgColor();
-    iTermAttribs.currentBgColor = Parser::fetchDefaultBgColor();
+    setBackgroundWhite(backgroundWhite);
     iTermAttribs.currentAttrib = TermChar::NoAttributes;
     iTermAttribs.wrapAroundMode = true;
     iTermAttribs.originMode = false;
@@ -1790,65 +1795,3 @@ QRect Terminal::selection() const
 {
     return iSelection;
 }
-
-#if defined(TEST_MODE)
-
-class TestTerminal : public Terminal
-{
-public:
-    void insertInBuffer(const QString& characters)
-    {
-        Terminal::insertInBuffer(characters);
-    }
-};
-
-static Util* s_testUtil = nullptr;
-
-static std::unique_ptr<TestTerminal> setupTestTerminal()
-{
-    if (s_testUtil == nullptr) {
-        s_testUtil = new Util("");
-    }
-    auto terminal = std::make_unique<TestTerminal>();
-    terminal->setTermSize(QSize(100, 100));
-    return terminal;
-}
-
-static std::unique_ptr<TestTerminal> requireSuccessfulParse(const QString& characters)
-{
-    auto terminal = setupTestTerminal();
-    terminal->setTermSize(QSize(100, 100));
-    terminal->insertInBuffer(characters);
-    return terminal;
-}
-
-TEST_CASE("Terminal: windowTitleChanged")
-{
-    auto t = setupTestTerminal();
-    QSignalSpy spy(t.get(), &Terminal::windowTitleChanged);
-    t->insertInBuffer("\x1b]2;hello\a");
-    REQUIRE(spy.count() == 1);
-    REQUIRE(spy.at(0)[0] == "hello");
-    spy.clear();
-
-    t->insertInBuffer("\x1b]2;world\x1b\\");
-    REQUIRE(spy.count() == 1);
-    REQUIRE(spy.at(0)[0] == "world");
-}
-
-TEST_CASE("Terminal: IL: No param doesn't crash")
-{
-    requireSuccessfulParse("\x1b[L");
-}
-
-TEST_CASE("Terminal: DL: No param doesn't crash")
-{
-    requireSuccessfulParse("\x1b[M");
-}
-
-TEST_CASE("Terminal: DCH: No param doesn't crash")
-{
-    requireSuccessfulParse("\x1b[P");
-}
-
-#endif

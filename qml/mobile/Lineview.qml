@@ -28,7 +28,7 @@ Rectangle {
     property int cursorHeight: 10
     property int extraLines: Util.extraLinesFromCursor
 
-    color: "#404040"
+    color: Util.backgroundWhite ? "#FFFFFF" : "#404040"
     border.width: 2
     border.color: "#909090"
     radius: window.radiusSmall

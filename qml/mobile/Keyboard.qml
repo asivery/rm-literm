@@ -98,7 +98,7 @@ Item {
 
     Connections {
         target: Util
-        onKeyboardLayoutChanged: {
+        function onKeyboardLayoutChanged(){
             var ret = KeyLoader.loadLayout(Util.keyboardLayout)
             if (!ret) {
                 showErrorMessage("There was an error loading the keyboard layout.<br>\nUsing the default one instead.");
@@ -106,7 +106,6 @@ Item {
                 ret = KeyLoader.loadLayout(":/data/english.layout"); //try the default as a fallback (load from resources to ensure it will succeed)
                 if (!ret) {
                     console.log("keyboard layout fail");
-                    Qt.quit();
                 }
             }
             keyboard.keyModifiers = 0

@@ -340,7 +340,7 @@ void TextRender::updatePolish()
         m_cursorDelegateInstance->setY(cursor.y());
         m_cursorDelegateInstance->setWidth(csize.width());
         m_cursorDelegateInstance->setHeight(csize.height());
-        m_cursorDelegateInstance->setProperty("color", Parser::fetchDefaultFgColor());
+        m_cursorDelegateInstance->setProperty("color", Parser::fetchDefaultFgColor(backgroundWhite));
     } else if (m_cursorDelegateInstance) {
         m_cursorDelegateInstance->setVisible(false);
     }
@@ -490,8 +490,8 @@ void TextRender::drawBgFragment(QQuickItem* cellDelegate, qreal x, qreal y, int 
 
     QColor qtColor;
 
-    if (m_terminal.inverseVideoMode() && style.bgColor == Parser::fetchDefaultBgColor()) {
-        qtColor = Parser::fetchDefaultFgColor();
+    if (m_terminal.inverseVideoMode() && style.bgColor == Parser::fetchDefaultBgColor(backgroundWhite)) {
+        qtColor = Parser::fetchDefaultFgColor(backgroundWhite);
     } else {
         qtColor = style.bgColor;
     }
@@ -529,8 +529,8 @@ void TextRender::drawTextFragment(QQuickItem* cellContentsDelegate, qreal x, qre
 
     QColor qtColor;
 
-    if (m_terminal.inverseVideoMode() && style.fgColor == Parser::fetchDefaultFgColor()) {
-        qtColor = Parser::fetchDefaultBgColor();
+    if (m_terminal.inverseVideoMode() && style.fgColor == Parser::fetchDefaultFgColor(backgroundWhite)) {
+        qtColor = Parser::fetchDefaultBgColor(backgroundWhite);
     } else {
         qtColor = style.fgColor;
     }
@@ -643,6 +643,17 @@ void TextRender::mouseRelease(float eventX, float eventY)
     } else if (m_dragMode == DragSelect) {
         selectionHelper(eventPos, false);
     }
+}
+
+void TextRender::vkbKeyPress(int key, int modifiers)
+{
+    m_terminal.keyPress(key, modifiers, QString());
+}
+
+void TextRender::setBackgroundWhite(bool backgroundWhite)
+{
+    m_terminal.setBackgroundWhite(backgroundWhite);
+    this->backgroundWhite = true;
 }
 
 void TextRender::keyPressEvent(QKeyEvent* event)

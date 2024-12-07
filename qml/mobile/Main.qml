@@ -22,19 +22,15 @@ import QtQuick.Window 2.0
 Item {
     id: root
 
-    width: 540
-    height: 960
+    width: 1620
+    height: 2160
 
-    Binding {
-        target: Util
-        property: "windowOrientation"
-        value: page.orientation
-    }
+    signal requestQuit
 
     Item {
         id: page
 
-        property int orientation: forceOrientation ? forcedOrientation : Screen.orientation
+        property int orientation: forceOrientation ? forcedOrientation : Qt.PortraitOrientation
         property bool forceOrientation: Util.orientationMode != Util.OrientationAuto
         property int forcedOrientation: Util.orientationMode == Util.OrientationLandscape ? Qt.LandscapeOrientation
                                                                                           : Qt.PortraitOrientation
@@ -48,13 +44,13 @@ Item {
         Rectangle {
             id: window
 
-            property string fgcolor: "black"
-            property string bgcolor: "#000000"
+            property string fgcolor: Util.backgroundWhite ? "white" : "black"
+            property string bgcolor: Util.backgroundWhite ? "white" : "#000000"
             property int fontSize: 14*pixelRatio
 
             property int fadeOutTime: 80
             property int fadeInTime: 350
-            property real pixelRatio: root.width / 540
+            property real pixelRatio: root.width / 1620
 
             // layout constants
             property int buttonWidthSmall: 60*pixelRatio
@@ -88,7 +84,7 @@ Item {
                 focus: true
 
                 onHangupReceived: {
-                    Qt.quit()
+                    console.warn("HUP")
                 }
                 onPanLeft: {
                     Util.notifyText(Util.panLeftTitle)
@@ -108,9 +104,6 @@ Item {
                 }
 
                 onDisplayBufferChanged: window.displayBufferChanged()
-                onTitleChanged: {
-                    Util.windowTitle = title
-                }
                 dragMode: Util.dragMode
                 onVisualBell: {
                     if (Util.visualBellEnabled)
@@ -160,25 +153,6 @@ Item {
                 cursorDelegate: Rectangle {
                     id: cursor
                     opacity: 0.5
-                    SequentialAnimation {
-                        running: Qt.application.state == Qt.ApplicationActive
-                        loops: Animation.Infinite
-                        NumberAnimation {
-                            target: cursor
-                            property: "opacity"
-                            to: 0.8
-                            duration: 200
-                        }
-                        PauseAnimation {
-                            duration: 400
-                        }
-                        NumberAnimation {
-                            target: cursor
-                            property: "opacity"
-                            to: 0.5
-                            duration: 200
-                        }
-                    }
                 }
                 selectionDelegate: Rectangle {
                     color: "blue"
@@ -195,6 +169,13 @@ Item {
                         NumberAnimation {
                             duration: 200
                         }
+                    }
+                }
+
+                Connections {
+                    target: Util
+                    onBackgroundWhiteChanged: () => {
+                        textrender.setBackgroundWhite(Util.backgroundWhite);
                     }
                 }
 
@@ -316,14 +297,14 @@ Item {
                     id: menuImg
 
                     anchors.centerIn: parent
-                    source: "qrc:/icons/menu.png"
+                    source: "qrc:/literm/icons/menu.png"
                     scale: window.pixelRatio
                 }
             }
 
             Image {
                 // terminal buffer scroll indicator
-                source: "qrc:/icons/scroll-indicator.png"
+                source: "qrc:/literm/icons/scroll-indicator.png"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 visible: textrender.showBufferScrollIndicator
@@ -347,7 +328,7 @@ Item {
 
             Connections {
                 target: Util
-                onNotify: {
+                function onNotify(msg) {
                     textNotify.text = msg;
                     textNotifyAnim.enabled = false;
                     textNotify.opacity = 1.0;
@@ -358,6 +339,7 @@ Item {
 
             MenuLiterm {
                 id: menu
+                onRequestQuit: () => root.requestQuit()
             }
 
             Text {
@@ -398,15 +380,13 @@ Item {
                 id: aboutDialog
 
                 text: {
-                    var str = "<font size=\"+3\">literm " + Util.versionString() + "</font><br>\n" +
+                    var str = "<font size=\"+3\">rMPP literm " + Util.versionString() + "</font><br>\n" +
                             "<font size=\"+1\">" +
-                            "Source code:<br>\n<a href=\"https://github.com/rburchell/literm/\">https://github.com/rburchell/literm/</a>\n\n"
-                            "Config files for adjusting settings are at:<br>\n" +
+                            "<br>Source code:<br>\n<a href=\"https://github.com/asivery/rmpp-literm/\">https://github.com/asivery/rmpp-literm/</a>\n\n" +
+                            "<br>Original source code:<br>\n<a href=\"https://github.com/rburchell/literm/\">https://github.com/rburchell/literm/</a>\n\n" +
+                            "<br>Config files for adjusting settings are at:<br>\n" +
                             Util.configPath() + "/<br><br>\n"
                     if (textrender.terminalSize.width != 0 && textrender.terminalSize.height != 0) {
-                        str += "<br><br>Current window title: <font color=\"gray\">" + Util.windowTitle.substring(0,40) + "</font>"; //cut long window title
-                        if(Util.windowTitle.length>40)
-                            str += "...";
                         str += "<br>Current terminal size: <font color=\"gray\">" + textrender.terminalSize.width + "×" + textrender.terminalSize.height+ "</font>";
                         str += "<br>Charset: <font color=\"gray\">" + Util.charset + "</font>";
                     }
@@ -427,9 +407,9 @@ Item {
                 id: layoutWindow
             }
 
-            function vkbKeypress(key,modifiers) {
+            function vkbKeypress(key, modifiers) {
                 wakeVKB();
-                Util.fakeKeyPress(key,modifiers);
+                textrender.vkbKeyPress(key, modifiers);
             }
 
             function wakeVKB()

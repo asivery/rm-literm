@@ -27,43 +27,14 @@
 #include "textrender.h"
 #include "utilities.h"
 #include "version.h"
+#include <dlfcn.h>
 
 static void copyFileFromResources(QString from, QString to);
 
-int main(int argc, char* argv[])
+extern "C" void registerQMLTypes()
 {
-    QCoreApplication::setApplicationName("literm");
-
-    QGuiApplication app(argc, argv);
-
-    QScreen* sc = app.primaryScreen();
-    if (sc) {
-        sc->setOrientationUpdateMask(Qt::PrimaryOrientation
-            | Qt::LandscapeOrientation
-            | Qt::PortraitOrientation
-            | Qt::InvertedLandscapeOrientation
-            | Qt::InvertedPortraitOrientation);
-    }
-
     qmlRegisterType<TextRender>("literm", 1, 0, "TextRender");
     qmlRegisterUncreatableType<Util>("literm", 1, 0, "Util", "Util is created by app");
-    QQuickView view;
-
-#if defined(DESKTOP_BUILD)
-    bool fullscreen = app.arguments().contains("-fullscreen");
-#else
-    bool fullscreen = !app.arguments().contains("-nofs");
-#endif
-
-    QSize screenSize = QGuiApplication::primaryScreen()->size();
-
-    if (fullscreen) {
-        view.setWidth(screenSize.width());
-        view.setHeight(screenSize.height());
-    } else {
-        view.setWidth(screenSize.width() / 2);
-        view.setHeight(screenSize.height() / 2);
-    }
 
     QString settings_path(QDir::homePath() + "/.config/literm");
     QDir dir;
@@ -80,65 +51,31 @@ int main(int argc, char* argv[])
 
     QString settingsFile = settings_path + "/settings.ini";
 
-    Util util(settingsFile);
-    qmlRegisterSingletonInstance("literm", 1, 0, "Util", &util);
+    Util *util = new Util(settingsFile);
+    qmlRegisterSingletonInstance("literm", 1, 0, "Util", util);
 
     QString startupErrorMsg;
 
     // copy the default config files to the config dir if they don't already exist
-    copyFileFromResources(":/data/menu.xml", util.configPath() + "/menu.xml");
-    copyFileFromResources(":/data/english.layout", util.configPath() + "/english.layout");
-    copyFileFromResources(":/data/finnish.layout", util.configPath() + "/finnish.layout");
-    copyFileFromResources(":/data/french.layout", util.configPath() + "/french.layout");
-    copyFileFromResources(":/data/german.layout", util.configPath() + "/german.layout");
-    copyFileFromResources(":/data/qwertz.layout", util.configPath() + "/qwertz.layout");
+    copyFileFromResources(":/literm/data/menu.xml", util->configPath() + "/menu.xml");
+    copyFileFromResources(":/literm/data/english.layout", util->configPath() + "/english.layout");
+    copyFileFromResources(":/literm/data/finnish.layout", util->configPath() + "/finnish.layout");
+    copyFileFromResources(":/literm/data/french.layout", util->configPath() + "/french.layout");
+    copyFileFromResources(":/literm/data/german.layout", util->configPath() + "/german.layout");
+    copyFileFromResources(":/literm/data/qwertz.layout", util->configPath() + "/qwertz.layout");
 
-    KeyLoader keyLoader;
-    keyLoader.setUtil(&util);
-    qmlRegisterSingletonInstance("literm", 1, 0, "KeyLoader", &keyLoader);
-    bool ret = keyLoader.loadLayout(util.keyboardLayout());
+    KeyLoader *keyLoader = new KeyLoader();
+    keyLoader->setUtil(util);
+    qmlRegisterSingletonInstance("literm", 1, 0, "KeyLoader", keyLoader);
+    bool ret = keyLoader->loadLayout(util->keyboardLayout());
     if (!ret) {
         // on failure, try to load the default one (english) directly from resources
         startupErrorMsg = "There was an error loading the keyboard layout.<br>\nUsing the default one instead.";
-        util.setKeyboardLayout("english");
-        ret = keyLoader.loadLayout(":/data/english.layout");
+        util->setKeyboardLayout("english");
+        ret = keyLoader->loadLayout(":/literm/data/english.layout");
         if (!ret)
             qFatal("failure loading keyboard layout");
     }
-
-    util.setWindow(&view);
-
-    QObject::connect(view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
-
-    // Allow overriding the UX choice
-    QString uxChoice;
-    if (app.arguments().contains("-mobile"))
-        uxChoice = "mobile";
-    else if (app.arguments().contains("-desktop"))
-        uxChoice = "desktop";
-
-    if (uxChoice.isEmpty()) {
-#if defined(MOBILE_BUILD)
-        uxChoice = "mobile";
-#else
-        uxChoice = "desktop";
-#endif
-    }
-
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl("qrc:/qml/" + uxChoice + "/Main.qml"));
-
-    QObject* root = view.rootObject();
-    if (!root)
-        qFatal("no root object - qml error");
-
-    if (fullscreen) {
-        view.showFullScreen();
-    } else {
-        view.show();
-    }
-
-    return app.exec();
 }
 
 static void copyFileFromResources(QString from, QString to)

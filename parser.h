@@ -41,8 +41,8 @@ enum TextAttribute
 };
 Q_DECLARE_FLAGS(TextAttributes, TextAttribute)
 
-QRgb fetchDefaultFgColor();
-QRgb fetchDefaultBgColor();
+QRgb fetchDefaultFgColor(bool backgroundWhite);
+QRgb fetchDefaultBgColor(bool backgroundWhite);
 
 struct SGRParserState
 {

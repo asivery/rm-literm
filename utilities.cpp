@@ -37,7 +37,6 @@ static Util* s_instance;
 Util::Util(const QString& settingsFile, QObject* parent)
     : QObject(parent)
     , m_settings(settingsFile, QSettings::IniFormat)
-    , iWindow(0)
 {
     Q_ASSERT(s_instance == nullptr);
     s_instance = this;
@@ -119,43 +118,7 @@ int Util::terminalScrollbackSize() const
     return m_settings.value("terminal/scrollbackLineLimit", "3000").toInt();
 }
 
-void Util::setWindow(QQuickView* win)
-{
-    if (iWindow)
-        qFatal("Should set window property only once");
-    iWindow = win;
-    if (!iWindow)
-        qFatal("invalid main window");
-    connect(win, SIGNAL(contentOrientationChanged(Qt::ScreenOrientation)), this, SIGNAL(windowOrientationChanged()));
-    connect(win, SIGNAL(windowTitleChanged(QString)), this, SIGNAL(windowTitleChanged()));
-}
-
-void Util::setWindowTitle(QString title)
-{
-    iWindow->setTitle(title);
-    emit windowTitleChanged();
-}
-
-QString Util::windowTitle()
-{
-    return iWindow->title();
-}
-
-int Util::windowOrientation()
-{
-    return iWindow->contentOrientation();
-}
-
-void Util::setWindowOrientation(int orientation)
-{
-    iWindow->reportContentOrientationChange(static_cast<Qt::ScreenOrientation>(orientation));
-}
-
-void Util::openNewWindow()
-{
-    QProcess::startDetached("/usr/bin/literm", QStringList());
-}
-
+/*
 QString Util::getUserMenuXml()
 {
     QString ret;
@@ -166,7 +129,7 @@ QString Util::getUserMenuXml()
     }
 
     return ret;
-}
+}*/
 
 QString Util::configPath()
 {
@@ -266,21 +229,16 @@ int Util::cursorAnimationEndPauseDuration() const
 
 QString Util::fontFamily()
 {
-    QFont defaultFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
-    QFontInfo fi(defaultFont);
-    return settingsValue("ui/fontFamily", fi.family()).toString();
+    if(monospaceFontFamily.isEmpty()) {
+        int id = QFontDatabase::addApplicationFont(":/literm/hack.ttf");
+        monospaceFontFamily = QFontDatabase::applicationFontFamilies(id).at(0);
+    }
+    return monospaceFontFamily;
 }
 
 TextRender::DragMode Util::dragMode()
 {
-#if defined(MOBILE_BUILD)
-    QString defaultDragMode("scroll");
-#elif defined(DESKTOP_BUILD) || defined(TEST_MODE)
-    QString defaultDragMode("select");
-#else
-#    error Unknown default dragMode
-#endif
-    QString mode = settingsValue("ui/dragMode", defaultDragMode).toString();
+    QString mode = settingsValue("ui/dragMode", "scroll").toString();
 
     if (mode == "gestures") {
         return TextRender::DragGestures;
@@ -291,6 +249,17 @@ TextRender::DragMode Util::dragMode()
     } else {
         return TextRender::DragOff;
     }
+}
+
+bool Util::backgroundWhite()
+{
+    return settingsValue("ui/backgroundWhite", true).toBool();
+}
+
+void Util::setBackgroundWhite(bool newValue)
+{
+    setSettingsValue("ui/backgroundWhite", newValue);
+    emit backgroundWhiteChanged();
 }
 
 void Util::setDragMode(TextRender::DragMode mode)
@@ -439,14 +408,6 @@ void Util::setOrientationMode(int mode)
 void Util::notifyText(QString text)
 {
     emit notify(text);
-}
-
-void Util::fakeKeyPress(int key, int modifiers)
-{
-    QKeyEvent pev(QEvent::KeyPress, key, Qt::KeyboardModifiers(modifiers));
-    QCoreApplication::sendEvent(iWindow, &pev);
-    QKeyEvent rev(QEvent::KeyRelease, key, Qt::KeyboardModifiers(modifiers));
-    QCoreApplication::sendEvent(iWindow, &rev);
 }
 
 void Util::copyTextToClipboard(QString str)

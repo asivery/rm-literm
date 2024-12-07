@@ -16,7 +16,6 @@
 */
 
 import QtQuick 2.0
-import QtQuick.XmlListModel 2.0
 import literm 1.0
 
 Item {
@@ -26,6 +25,8 @@ Item {
 
     anchors.fill: parent
     visible: rect.x < menuWin.width
+
+    signal requestQuit
 
     Rectangle {
         id: fader
@@ -55,33 +56,6 @@ Item {
             anchors.fill: parent
         }
 
-        Behavior on anchors.leftMargin {
-            NumberAnimation { duration: 100; easing.type: Easing.InOutQuad; }
-        }
-
-        XmlListModel {
-            id: xmlModel
-            xml: Util.getUserMenuXml()
-            query: "/userMenu/item"
-
-            XmlRole { name: "title"; query: "title/string()" }
-            XmlRole { name: "command"; query: "command/string()" }
-            XmlRole { name: "disableOn"; query: "disableOn/string()" }
-        }
-
-        Component {
-            id: xmlDelegate
-            Button {
-                text: title
-                isShellCommand: true
-                enabled: disableOn.length === 0 || Util.windowTitle.search(disableOn) === -1
-                onClicked: {
-                    menuWin.showing = false;
-                    textrender.putString(command);
-                }
-            }
-        }
-
         ScrollDecorator {
             x: parent.width-window.paddingMedium
             y: menuFlickArea.visibleArea.yPosition*menuFlickArea.height + window.scrollBarWidth
@@ -107,14 +81,6 @@ Item {
                 Row {
                     id: menuBlocksRow
                     spacing: 8*window.pixelRatio
-
-                    Column {
-                        spacing: 12*window.pixelRatio
-                        Repeater {
-                            model: xmlModel
-                            delegate: xmlDelegate
-                        }
-                    }
 
                     Column {
                         spacing: 12*window.pixelRatio
@@ -340,13 +306,6 @@ Item {
                             }
                         }
                         Button {
-                            text: "New window"
-                            onClicked: {
-                                menuWin.showing = false;
-                                Util.openNewWindow();
-                            }
-                        }
-                        Button {
                             text: "VKB layout..."
                             onClicked: {
                                 menuWin.showing = false;
@@ -355,17 +314,23 @@ Item {
                             }
                         }
                         Button {
+                            text: Util.backgroundWhite ? "Dark Background" : "White Background"
+                            onClicked: {
+                                Util.backgroundWhite = !Util.backgroundWhite;
+                            }
+                        }
+                        Button {
                             text: "About"
                             onClicked: {
                                 menuWin.showing = false;
-                                aboutDialog.show = true
+                                aboutDialog.show = true;
                             }
                         }
                         Button {
                             text: "Quit"
                             onClicked: {
                                 menuWin.showing = false;
-                                Qt.quit();
+                                menuWin.requestQuit();
                             }
                         }
                     }

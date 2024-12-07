@@ -44,40 +44,6 @@ extern "C" {
 #include "ptyiface.h"
 #include "terminal.h"
 
-std::vector<int> PtyIFace::m_deadPids;
-bool PtyIFace::m_initializedSignalHandler = false;
-
-void PtyIFace::sighandler(int sig)
-{
-    if (sig == SIGCHLD) {
-        int pid = wait(NULL);
-
-        if (pid > 0) {
-            // we cannot reallocate in a signal handler, or Bad Things will happen
-            Q_ASSERT(m_deadPids.size() + 1 <= m_deadPids.capacity());
-            m_deadPids.push_back(pid);
-        }
-    }
-}
-
-void PtyIFace::checkForDeadPids()
-{
-    for (size_t i = 0; i < m_deadPids.size(); ++i) {
-        if (m_deadPids.at(i) == m_childProcessPid) {
-            delete iReadNotifier;
-
-            m_deadPids.erase(m_deadPids.begin() + i);
-
-            int status = 0;
-            waitpid(m_childProcessPid, &status, WNOHANG);
-            m_childProcessQuit = true;
-            m_childProcessPid = 0;
-
-            emit hangupReceived();
-            return;
-        }
-    }
-}
 
 PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& termEnv, const QString& commandOverride, QObject* parent)
     : QObject(parent)
@@ -86,11 +52,9 @@ PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& ter
     , m_childProcessQuit(false)
     , m_childProcessPid(0)
     , iReadNotifier(0)
-    , iTextCodec(0)
+    , iTextCodec(QStringDecoder(QStringConverter::Utf8))
+    , oTextCodec(QStringEncoder(QStringConverter::Utf8))
 {
-    m_deadPids.reserve(m_deadPids.capacity() + 1);
-    connect(qApp->eventDispatcher(), &QAbstractEventDispatcher::awake, this, &PtyIFace::checkForDeadPids);
-
     // fork the child process before creating QGuiApplication
     int socketM;
     int pid = forkpty(&socketM, NULL, NULL, NULL);
@@ -153,19 +117,16 @@ PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& ter
     iReadNotifier = new QSocketNotifier(iMasterFd, QSocketNotifier::Read, this);
     connect(iReadNotifier, SIGNAL(activated(int)), this, SLOT(readActivated()));
 
-    if (!m_initializedSignalHandler) {
-        signal(SIGCHLD, &PtyIFace::sighandler);
-        m_initializedSignalHandler = true;
-    }
 
     fcntl(iMasterFd, F_SETFL, O_NONBLOCK); // reads from the descriptor should be non-blocking
 
-    if (!charset.isEmpty())
-        iTextCodec = QTextCodec::codecForName(charset.toLatin1());
-    if (!iTextCodec)
-        iTextCodec = QTextCodec::codecForName("UTF-8");
-    if (!iTextCodec)
-        qFatal("No valid text codec");
+    if (!charset.isEmpty()) {
+        auto encoding = QStringConverter::encodingForName(charset.toLatin1());
+        if(auto e = encoding) {
+            iTextCodec = QStringDecoder(*e);
+            oTextCodec = QStringEncoder(*e);
+        }
+    }
 }
 
 PtyIFace::~PtyIFace()
@@ -186,7 +147,7 @@ void PtyIFace::readActivated()
     char ch[4096];
     ret = read(iMasterFd, ch, sizeof(ch));
     if (iTerm && ret > 0) {
-        m_pendingData += iTextCodec->toUnicode(QByteArray::fromRawData(ch, ret));
+        m_pendingData += iTextCodec(QByteArray::fromRawData(ch, ret));
         emit dataAvailable();
     }
 }
@@ -205,7 +166,7 @@ void PtyIFace::resize(int rows, int columns)
 
 void PtyIFace::writeTerm(const QString& chars)
 {
-    writeTerm(iTextCodec->fromUnicode(chars));
+    writeTerm(oTextCodec(chars));
 }
 
 void PtyIFace::writeTerm(const QByteArray& chars)

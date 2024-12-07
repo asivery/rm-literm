@@ -30,8 +30,6 @@ class QQuickView;
 class Util : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString windowTitle READ windowTitle WRITE setWindowTitle NOTIFY windowTitleChanged)
-    Q_PROPERTY(int windowOrientation READ windowOrientation WRITE setWindowOrientation NOTIFY windowOrientationChanged)
     Q_PROPERTY(bool visualBellEnabled READ visualBellEnabled CONSTANT)
     Q_PROPERTY(int cursorAnimationStartPauseDuration READ cursorAnimationStartPauseDuration CONSTANT)
     Q_PROPERTY(int cursorAnimationFadeInDuration READ cursorAnimationFadeInDuration CONSTANT)
@@ -46,6 +44,7 @@ class Util : public QObject
     Q_PROPERTY(int keyboardFadeOutDelay READ keyboardFadeOutDelay WRITE setKeyboardFadeOutDelay NOTIFY keyboardFadeOutDelayChanged)
     Q_PROPERTY(QString keyboardLayout READ keyboardLayout WRITE setKeyboardLayout NOTIFY keyboardLayoutChanged)
     Q_PROPERTY(int extraLinesFromCursor READ extraLinesFromCursor CONSTANT)
+    Q_PROPERTY(bool backgroundWhite READ backgroundWhite WRITE setBackgroundWhite NOTIFY backgroundWhiteChanged)
     Q_PROPERTY(QString charset READ charset CONSTANT)
     Q_PROPERTY(int keyboardMargins READ keyboardMargins CONSTANT)
     Q_PROPERTY(int orientationMode READ orientationMode WRITE setOrientationMode NOTIFY orientationModeChanged)
@@ -101,14 +100,7 @@ public:
     QString terminalCommand() const;
     int terminalScrollbackSize() const;
 
-    void setWindow(QQuickView* win);
-    void setWindowTitle(QString title);
-    QString windowTitle();
-    int windowOrientation();
-    void setWindowOrientation(int orientation);
-
-    Q_INVOKABLE void openNewWindow();
-    Q_INVOKABLE QString getUserMenuXml();
+    // Q_INVOKABLE QString getUserMenuXml();
 
     Q_INVOKABLE QString versionString();
     Q_INVOKABLE QString configPath();
@@ -120,10 +112,12 @@ public:
     int fontSize();
     void setFontSize(int size);
 
+    bool backgroundWhite();
+    void setBackgroundWhite(bool backgroundWhite);
+
     Q_INVOKABLE void keyPressFeedback();
     Q_INVOKABLE void keyReleaseFeedback();
     Q_INVOKABLE void notifyText(QString text);
-    Q_INVOKABLE void fakeKeyPress(int key, int modifiers);
 
     Q_INVOKABLE void copyTextToClipboard(QString str);
 
@@ -158,10 +152,9 @@ public:
 
 signals:
     void notify(QString msg);
-    void windowTitleChanged();
-    void windowOrientationChanged();
     void fontSizeChanged();
     void dragModeChanged();
+    void backgroundWhiteChanged();
     void keyboardModeChanged();
     void keyboardFadeOutDelayChanged();
     void keyboardLayoutChanged();
@@ -171,8 +164,8 @@ private:
     Q_DISABLE_COPY(Util)
 
     QSettings m_settings;
-    QQuickView* iWindow;
     QString m_startupErrorMessage;
+    QString monospaceFontFamily;
 };
 
 #endif // UTIL_H

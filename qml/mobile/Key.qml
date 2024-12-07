@@ -40,7 +40,7 @@ Rectangle {
     property bool shiftActive: (keyboard.keyModifiers & Qt.ShiftModifier) && !sticky
 
     width: window.width/12   // some default
-    height: window.height/8 < 55*window.pixelRatio ? window.height/8 : 55*window.pixelRatio
+    height: window.height/14 < 55*window.pixelRatio ? window.height/14 : 55*window.pixelRatio
     color: label=="" ? "transparent" : keyboard.keyBgColor
     border.color: label=="" ? "transparent" : keyboard.keyBorderColor
     border.width: 1
@@ -50,7 +50,7 @@ Rectangle {
         id: keyImage
         anchors.centerIn: parent
         opacity: key.labelOpacity
-        source: { if(key.label.length>1 && key.label.charAt(0)==':') return "qrc:/icons/"+key.label.substring(1)+".png"; else return ""; }
+        source: { if(key.label.length>1 && key.label.charAt(0)==':') return "qrc:/literm/icons/"+key.label.substring(1)+".png"; else return ""; }
         scale: window.pixelRatio
     }
 

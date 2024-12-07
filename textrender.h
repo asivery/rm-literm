@@ -51,6 +51,8 @@ public:
     Q_INVOKABLE const QStringList printableLinesFromCursor(int lines);
     Q_INVOKABLE void putString(QString str);
     Q_INVOKABLE const QStringList grabURLsFromBuffer();
+    Q_INVOKABLE void vkbKeyPress(int key, int modifiers);
+    Q_INVOKABLE void setBackgroundWhite(bool backgroundWhite);
 
     bool canPaste() const;
     Q_INVOKABLE void copy();
@@ -217,6 +219,7 @@ private:
     DragMode m_dragMode;
     QString m_title;
     int m_dispatch_timer;
+    bool backgroundWhite;
     Terminal m_terminal;
 };
 
