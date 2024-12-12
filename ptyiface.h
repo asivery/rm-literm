@@ -47,9 +47,11 @@ public:
 private slots:
     void resize(int rows, int columns);
     void readActivated();
+    void processDied();
 
 signals:
     void dataAvailable();
+    void terminalQuit();
 
 private:
     Q_DISABLE_COPY(PtyIFace)
@@ -64,6 +66,7 @@ private:
     int m_childProcessPid;
 
     QSocketNotifier* iReadNotifier;
+    QSocketNotifier* iDeathNotifier;
 
     QStringDecoder iTextCodec;
     QStringEncoder oTextCodec;

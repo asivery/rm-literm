@@ -133,7 +133,7 @@ signals:
     void panRight();
     void panUp();
     void panDown();
-    void hangupReceived();
+    void terminalQuit();
 
 public slots:
     void redraw();

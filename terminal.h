@@ -159,7 +159,7 @@ signals:
     void visualBell();
     void windowTitleChanged(const QString& windowTitle);
     void workingDirectoryChanged(const QString& workingDirectory);
-    void hangupReceived();
+    void terminalQuit();
 
 protected:
     void timerEvent(QTimerEvent*) override;

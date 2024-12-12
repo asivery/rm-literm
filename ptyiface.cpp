@@ -52,6 +52,7 @@ PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& ter
     , m_childProcessQuit(false)
     , m_childProcessPid(0)
     , iReadNotifier(0)
+    , iDeathNotifier(0)
     , iTextCodec(QStringDecoder(QStringConverter::Utf8))
     , oTextCodec(QStringEncoder(QStringConverter::Utf8))
 {
@@ -117,6 +118,8 @@ PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& ter
     iReadNotifier = new QSocketNotifier(iMasterFd, QSocketNotifier::Read, this);
     connect(iReadNotifier, SIGNAL(activated(int)), this, SLOT(readActivated()));
 
+    iDeathNotifier = new QSocketNotifier(iMasterFd, QSocketNotifier::Exception, this);
+    connect(iDeathNotifier, SIGNAL(activated(int)), this, SLOT(processDied()));
 
     fcntl(iMasterFd, F_SETFL, O_NONBLOCK); // reads from the descriptor should be non-blocking
 
@@ -136,6 +139,15 @@ PtyIFace::~PtyIFace()
         kill(iPid, SIGHUP);
         kill(iPid, SIGTERM);
     }
+}
+
+void PtyIFace::processDied(){
+    if (m_childProcessQuit) {
+        return;
+    }
+    m_childProcessQuit = true;
+    qDebug() << "Process died!!";
+    emit terminalQuit();
 }
 
 void PtyIFace::readActivated()

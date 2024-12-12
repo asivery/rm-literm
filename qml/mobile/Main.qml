@@ -83,9 +83,7 @@ Item {
                 id: textrender
                 focus: true
 
-                onHangupReceived: {
-                    console.warn("HUP")
-                }
+                onTerminalQuit: () => root.requestQuit()
                 onPanLeft: {
                     Util.notifyText(Util.panLeftTitle)
                     textrender.putString(Util.panLeftCommand)
@@ -174,7 +172,7 @@ Item {
 
                 Connections {
                     target: Util
-                    onBackgroundWhiteChanged: () => {
+                    function onBackgroundWhiteChanged() {
                         textrender.setBackgroundWhite(Util.backgroundWhite);
                     }
                 }
