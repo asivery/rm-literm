@@ -11,7 +11,9 @@ To build, run `make.sh` after setting up the XOVI_ROOT environmental variable, a
 
 Since this project modifies the rM's UI, it is not version agnostic. To update from one version to another, change the values in `literm.qmd`.
 
-This branch is built for `3.15.4.2`. Feel free to try it on other versions, to see if it works.
+This branch is built for `3.16.2.3`. Feel free to try it on other versions, to see if it works.
+
+To change terminal settings, please tap the top-right hand corner of the screen. A toolbar should open.
 
 # installation
 
