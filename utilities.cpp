@@ -324,21 +324,6 @@ void Util::setKeyboardMode(int mode)
     emit keyboardModeChanged();
 }
 
-int Util::keyboardFadeOutDelay()
-{
-    return settingsValue("ui/keyboardFadeOutDelay", 4000).toInt();
-}
-
-void Util::setKeyboardFadeOutDelay(int delay)
-{
-    if (delay == keyboardFadeOutDelay()) {
-        return;
-    }
-
-    setSettingsValue("ui/keyboardFadeOutDelay", delay);
-    emit keyboardFadeOutDelayChanged();
-}
-
 QString Util::keyboardLayout()
 {
     return settingsValue("ui/keyboardLayout", "english").toString();

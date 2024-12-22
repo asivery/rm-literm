@@ -41,7 +41,6 @@ class Util : public QObject
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(TextRender::DragMode dragMode READ dragMode WRITE setDragMode NOTIFY dragModeChanged)
     Q_PROPERTY(int keyboardMode READ keyboardMode WRITE setKeyboardMode NOTIFY keyboardModeChanged)
-    Q_PROPERTY(int keyboardFadeOutDelay READ keyboardFadeOutDelay WRITE setKeyboardFadeOutDelay NOTIFY keyboardFadeOutDelayChanged)
     Q_PROPERTY(QString keyboardLayout READ keyboardLayout WRITE setKeyboardLayout NOTIFY keyboardLayoutChanged)
     Q_PROPERTY(int extraLinesFromCursor READ extraLinesFromCursor CONSTANT)
     Q_PROPERTY(bool backgroundWhite READ backgroundWhite WRITE setBackgroundWhite NOTIFY backgroundWhiteChanged)
@@ -137,9 +136,6 @@ public:
     int keyboardMode();
     void setKeyboardMode(int mode);
 
-    int keyboardFadeOutDelay();
-    void setKeyboardFadeOutDelay(int delay);
-
     QString keyboardLayout();
     void setKeyboardLayout(const QString& layout);
 
@@ -156,7 +152,6 @@ signals:
     void dragModeChanged();
     void backgroundWhiteChanged();
     void keyboardModeChanged();
-    void keyboardFadeOutDelayChanged();
     void keyboardLayoutChanged();
     void orientationModeChanged();
 
