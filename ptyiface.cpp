@@ -64,6 +64,7 @@ PtyIFace::PtyIFace(Terminal* term, const QString& charset, const QByteArray& ter
         exit(1);
     } else if (pid == 0) {
         setenv("TERM", termEnv, 1);
+        setenv("LD_PRELOAD", "", 1);
 
         QString execCmd;
         bool next = false;
