@@ -24,7 +24,6 @@ Item {
     property int keyModifiers
     property Key resetSticky
     property Key currentStickyPressed
-    property Key currentKeyPressed
 
     property string keyFgColor: "#000000"
     property string keyBgColor: "#ffffff"
@@ -82,19 +81,6 @@ Item {
         keyboardLoader.sourceComponent = keyboardContents;
     }
 
-    onCurrentKeyPressedChanged: {
-        if(currentKeyPressed && currentKeyPressed.currentLabel.length === 1 && currentKeyPressed.currentLabel !== " ") {
-            visualKeyFeedbackRect.label = currentKeyPressed.currentLabel
-            visualKeyFeedbackRect.width = currentKeyPressed.width*1.5
-            visualKeyFeedbackRect.height = currentKeyPressed.height*1.5
-            var mappedCoord = window.mapFromItem(currentKeyPressed, 0, 0);
-            visualKeyFeedbackRect.x = mappedCoord.x - (visualKeyFeedbackRect.width-currentKeyPressed.width)/2
-            visualKeyFeedbackRect.y = mappedCoord.y - currentKeyPressed.height*1.5
-            visualKeyFeedbackRect.visible = true;
-        } else {
-            visualKeyFeedbackRect.visible = false;
-        }
-    }
 
     Connections {
         target: Util

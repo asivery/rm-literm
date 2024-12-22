@@ -49,7 +49,7 @@ Rectangle {
     Image {
         id: keyImage
         anchors.centerIn: parent
-        opacity: 1.0
+        opacity: key.labelOpacity
         source: { if(key.label.length>1 && key.label.charAt(0)==':') return "qrc:/literm/icons/"+key.label.substring(1)+".png"; else return ""; }
         scale: window.pixelRatio
     }
@@ -121,7 +121,6 @@ Rectangle {
         pressMouseY = y;
 
         key.color = keyboard.keyHilightBgColor
-        keyboard.currentKeyPressed = key;
         Util.keyPressFeedback();
 
         keyRepeatStarter.start();
@@ -160,7 +159,6 @@ Rectangle {
         keyRepeatStarter.stop()
         keyRepeatTimer.stop()
         key.color = keyboard.keyBgColor
-        keyboard.currentKeyPressed = null
 
         if (sticky && !becomesSticky) {
             keyboard.keyModifiers &= ~code

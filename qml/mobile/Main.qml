@@ -255,19 +255,6 @@ Item {
                     onReleased: {
                         touchPoints.forEach(function (touchPoint) {
                             if (multiTouchArea.firstTouchId == touchPoint.pointId) {
-                                // Toggle keyboard wake-up when tapping outside the keyboard, but:
-                                //   - only when not scrolling (y-diff < 20 pixels)
-                                //   - not in select mode, as it would be hard to select text
-                                if (touchPoint.y < vkb.y && touchPoint.startY < vkb.y &&
-                                        Math.abs(touchPoint.y - touchPoint.startY) < 20 &&
-                                        Util.dragMode !== Util.DragSelect) {
-                                    if (vkb.active) {
-                                        window.sleepVKB()
-                                    } else {
-                                        window.wakeVKB()
-                                    }
-                                }
-
                                 //gestures c++ handler
                                 textrender.mouseRelease(touchPoint.x, touchPoint.y)
                                 multiTouchArea.firstTouchId = -1
@@ -309,15 +296,6 @@ Item {
             }
 
             Timer {
-                id: fadeTimer
-
-                interval: Util.keyboardFadeOutDelay
-                onTriggered: {
-                    window.sleepVKB();
-                }
-            }
-
-            Timer {
                 id: bellTimer
 
                 interval: 80
@@ -354,25 +332,6 @@ Item {
                 }
             }
 
-            Rectangle {
-                // visual key press feedback...
-                // easier to work with the coordinates if it's here and not under keyboard element
-                id: visualKeyFeedbackRect
-
-                property string label
-
-                visible: false
-                radius: window.radiusSmall
-                color: "#ffffff"
-
-                Text {
-                    color: "#000000"
-                    font.pointSize: 34*window.pixelRatio
-                    anchors.centerIn: parent
-                    text: visualKeyFeedbackRect.label
-                }
-            }
-
             NotifyWin {
                 id: aboutDialog
 
@@ -405,24 +364,7 @@ Item {
             }
 
             function vkbKeypress(key, modifiers) {
-                wakeVKB();
                 textrender.vkbKeyPress(key, modifiers);
-            }
-
-            function wakeVKB()
-            {
-                if (!vkb.keyboardEnabled)
-                    return;
-
-                textrender.duration = window.fadeOutTime;
-                fadeTimer.restart();
-                vkb.active = true;
-                setTextRenderAttributes();
-            }
-
-            function sleepVKB()
-            {
-                // do nothing
             }
 
             function setTextRenderAttributes()
