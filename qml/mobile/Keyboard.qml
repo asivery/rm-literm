@@ -26,10 +26,10 @@ Item {
     property Key currentStickyPressed
     property Key currentKeyPressed
 
-    property string keyFgColor: "#ffffff"
-    property string keyBgColor: "#202020"
-    property string keyHilightBgColor: "#ffffff"
-    property string keyBorderColor: "#303030"
+    property string keyFgColor: "#000000"
+    property string keyBgColor: "#ffffff"
+    property string keyHilightBgColor: "#000000"
+    property string keyBorderColor: "#000000"
 
     property int outmargins: Util.keyboardMargins
     property int keyspacing: 6

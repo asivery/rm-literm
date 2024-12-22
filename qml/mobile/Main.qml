@@ -110,8 +110,7 @@ Item {
                 contentItem: Item {
                     width: parent.width
                     height: parent.height
-                    opacity: (Util.keyboardMode == Util.KeyboardFade && vkb.active) ? 0.3
-                                                                                    : 1.0
+                    opacity: 1.0
 
                     Behavior on opacity {
                         NumberAnimation { duration: textrender.duration; easing.type: Easing.InOutQuad }
@@ -210,7 +209,7 @@ Item {
                     y: parent.height - vkb.height
                     visible: keyboardEnabled
 
-                    opacity: vkb.active ? 0.7 : 0.3
+                    opacity: 1.0
                     Behavior on opacity {
                         NumberAnimation { duration: textrender.duration; easing.type: Easing.InOutQuad }
                     }
@@ -423,9 +422,7 @@ Item {
 
             function sleepVKB()
             {
-                textrender.duration = window.fadeInTime;
-                vkb.active = false;
-                setTextRenderAttributes();
+                // do nothing
             }
 
             function setTextRenderAttributes()
