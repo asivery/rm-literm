@@ -30,7 +30,7 @@ Rectangle {
     property bool sticky        // can key be stickied?
     property bool becomesSticky // will this become sticky after release?
     property int stickiness     // current stickiness status
-    property real labelOpacity: keyboard.active ? 1.0 : 0.3
+    property real labelOpacity: 1.0
 
     // mouse input handling
     property int clickThreshold: 20
@@ -49,7 +49,7 @@ Rectangle {
     Image {
         id: keyImage
         anchors.centerIn: parent
-        opacity: key.labelOpacity
+        opacity: 1.0
         source: { if(key.label.length>1 && key.label.charAt(0)==':') return "qrc:/literm/icons/"+key.label.substring(1)+".png"; else return ""; }
         scale: window.pixelRatio
     }
