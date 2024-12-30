@@ -1,0 +1,8 @@
+{
+    "name": "LiTerm",
+    "loadsBackend": false,
+    "entry": "/ui/main.qml",
+    "id": "literm",
+    "supportsScaling": true,
+    "canHaveMultipleFrontends": true
+}
