@@ -35,6 +35,40 @@ Item {
 
     Keys.onPressed: (event) => {
         textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+    Keys.onReleased: (event) => {
+        event.accepted = true;
+    }
+
+    Keys.onEscapePressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+
+    Keys.onShortcutOverride: (event) => {
+        event.accepted = true;
+    }
+    
+    Keys.onLeftPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+    Keys.onRightPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+    Keys.onUpPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+    Keys.onDownPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
+    }
+    Keys.onEnterPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+        event.accepted = true;
     }
 
     Item {
