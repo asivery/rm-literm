@@ -50,6 +50,7 @@ AFFECT [[8850026134298937527]]
                     ~&7082453764421&~: _terminalView.~&233748328658231&~
                     ~&233721384511543&~.~&6503816592&~: ~&7083038346995&~
                     ~&7083172477658&~: "qrc:///literm/qml/mobile/Main.qml"
+                    focus: internalTerminal._terminalView.visible
                 }
 
                 ~&428051690305612204&~ {

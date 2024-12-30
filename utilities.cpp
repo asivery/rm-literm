@@ -292,9 +292,7 @@ int Util::keyboardMode()
 {
     QString mode = settingsValue("ui/vkbShowMethod", "move").toString();
 
-    if (mode == "fade") {
-        return KeyboardFade;
-    } else if (mode == "move") {
+    if (mode == "move") {
         return KeyboardMove;
     } else {
         return KeyboardOff;
@@ -309,9 +307,6 @@ void Util::setKeyboardMode(int mode)
 
     QString modeString;
     switch (mode) {
-    case KeyboardFade:
-        modeString = "fade";
-        break;
     case KeyboardMove:
         modeString = "move";
         break;

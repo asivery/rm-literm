@@ -68,7 +68,6 @@ public:
     enum KeyboardMode
     {
         KeyboardOff,
-        KeyboardFade,
         KeyboardMove
     };
 

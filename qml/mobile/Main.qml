@@ -26,6 +26,16 @@ Item {
     height: 2160
 
     signal requestQuit
+    property bool shouldEnableVKB: true
+    focus: true
+
+    Component.onCompleted: () => {
+        root.forceActiveFocus();
+    }
+
+    Keys.onPressed: (event) => {
+        textrender.vkbKeyPress(event.key, event.modifiers);
+    }
 
     Item {
         id: page
@@ -183,7 +193,7 @@ Item {
                 width: parent.width
                 font.family: Util.fontFamily
                 font.pointSize: Util.fontSize
-                allowGestures: !vkb.active
+                allowGestures: !vkb.keyboardEnabled
 
                 onCutAfterChanged: {
                     // this property is used in the paint function, so make sure that the element gets
@@ -193,8 +203,7 @@ Item {
 
                 Lineview {
                     id: lineView
-                    opacity: ((Util.keyboardMode == Util.KeyboardFade) && vkb.active) ? 0.8
-                                                                                      : 0.0
+                    opacity: 0
                     cursorWidth: textrender.cellSize.width
                     cursorHeight: textrender.cellSize.height
                 }
@@ -202,9 +211,7 @@ Item {
                 Keyboard {
                     id: vkb
 
-                    property bool active
-                    property bool keyboardEnabled: (Util.keyboardMode == Util.KeyboardMove)
-                                                    || (Util.keyboardMode == Util.KeyboardFade)
+                    property bool keyboardEnabled: root.shouldEnableVKB && (Util.keyboardMode == Util.KeyboardMove)
 
                     y: parent.height - vkb.height
                     visible: keyboardEnabled
@@ -369,7 +376,7 @@ Item {
 
             function setTextRenderAttributes()
             {
-                if (Util.keyboardMode == Util.KeyboardMove && vkb.active) {
+                if (vkb.keyboardEnabled) {
                     var move = textrender.cursorPixelPos().y
                             + textrender.cellSize.height * (Util.extraLinesFromCursor + 0.5)
                     if (move < vkb.y) {

@@ -277,18 +277,7 @@ Item {
                                             window.setTextRenderAttributes();
                                             menuWin.showing = false;
                                         }
-                                        width: window.buttonWidthSmall
-                                        height: window.buttonHeightSmall
-                                    }
-                                    Button {
-                                        text: "Fade"
-                                        highlighted: Util.keyboardMode == Util.KeyboardFade
-                                        onClicked: {
-                                            Util.keyboardMode = Util.KeyboardFade
-                                            window.setTextRenderAttributes();
-                                            menuWin.showing = false;
-                                        }
-                                        width: window.buttonWidthSmall
+                                        width: window.buttonWidthHalf
                                         height: window.buttonHeightSmall
                                     }
                                     Button {
@@ -299,7 +288,7 @@ Item {
                                             window.setTextRenderAttributes();
                                             menuWin.showing = false;
                                         }
-                                        width: window.buttonWidthSmall
+                                        width: window.buttonWidthHalf
                                         height: window.buttonHeightSmall
                                     }
                                 }
