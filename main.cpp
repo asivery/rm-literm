@@ -36,18 +36,7 @@ extern "C" void registerQMLTypes()
     qmlRegisterType<TextRender>("literm", 1, 0, "TextRender");
     qmlRegisterUncreatableType<Util>("literm", 1, 0, "Util", "Util is created by app");
 
-    QString settings_path(QDir::homePath() + "/.config/literm");
-    QDir dir;
-
-    if (!dir.exists(settings_path)) {
-        // Migrate FingerTerm settings if present
-        QString old_settings_path(QDir::homePath() + "/.config/FingerTerm");
-        if (dir.exists(old_settings_path)) {
-            if (!dir.rename(old_settings_path, settings_path))
-                qWarning() << "Could not migrate FingerTerm settings path" << old_settings_path << "to" << settings_path;
-        } else if (!dir.mkdir(settings_path))
-            qWarning() << "Could not create literm settings path" << settings_path;
-    }
+    QString settings_path("/home/root/.config/literm");
 
     QString settingsFile = settings_path + "/settings.ini";
 
