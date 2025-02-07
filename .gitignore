@@ -5,6 +5,7 @@ moc_*
 /literm
 /apptest/apptest
 qrc_resources.cpp
-/xoviout
 /libliterm*
 *.pure.qmd
+xovi.c
+xovi.h

@@ -1,6 +1,5 @@
 version         0.1.0
 
-modulebase      xovibase.c
 import?         qt-resource-rebuilder$qmldiff_add_external_diff
 resource        qmldiff:literm.qmd
 

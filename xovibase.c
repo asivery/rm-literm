@@ -2,11 +2,9 @@
 #include <dlfcn.h>
 #include <stddef.h>
 #include <stdio.h>
+#include "xovi.h"
+
 void registerQMLTypes();
-extern const struct XoViEnvironment {
-    char *(*getExtensionDirectory)(const char *family);
-    void (*requireExtension)(const char *name, unsigned char major, unsigned char minor, unsigned char patch);
-} *Environment;
 
 void _xovi_construct(){
     // Load dependency tree
