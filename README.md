@@ -7,7 +7,7 @@ All the code responsible for merging into the system UI is stored in `literm.qmd
 
 The font I added instead of the system default is [hack](https://github.com/source-foundry/Hack)
 
-To build, run `make.sh` after setting up the XOVI_ROOT environmental variable, and sourcing the toolchain's env. file.
+To build, run `qmake .; make` after setting up the XOVI_ROOT environmental variable, and sourcing the toolchain's env. file.
 
 Since this project modifies the rM's UI, it is not version agnostic. To update from one version to another, change the values in `literm.qmd`.
 
