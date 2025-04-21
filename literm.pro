@@ -14,7 +14,7 @@ INCLUDEPATH += .
 LIBS += -lutil
 
 xoviextension.target = xovi.c
-xoviextension.commands = python3 $$(XOVI_HOME)/util/xovigen.py -o xovi.c -H xovi.h literm.xovi
+xoviextension.commands = python3 $$(XOVI_REPO)/util/xovigen.py -o xovi.c -H xovi.h literm.xovi
 xoviextension.depends = literm.xovi
 
 QMAKE_EXTRA_TARGETS += xoviextension
