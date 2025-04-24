@@ -5,7 +5,7 @@ CONFIG -= app_bundle
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-CONFIG += shared link_pkgconfig
+CONFIG += shared link_pkgconfig plugin no_plugin_name_prefix
 
 TEMPLATE = lib
 TARGET = literm
