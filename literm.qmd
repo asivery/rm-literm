@@ -32,7 +32,7 @@ AFFECT [[8850026134298937527]]
         LOCATE BEFORE ALL
         INSERT { property alias terminalView: _terminalView }
 
-        LOCATE AFTER [[7983855063553809241]]
+        LOCATE AFTER [[7081645463424]]#[[16535813298890332374]]
         INSERT {
             ~&254501108490678590&~ {
                 ~&5972374&~: _terminalView
