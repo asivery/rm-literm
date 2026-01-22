@@ -1,0 +1,116 @@
+name: Build and upload releases
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          [
+            "eeems/remarkable-toolchain:latest-rmpp",
+            "eeems/remarkable-toolchain:latest-rm2",
+          ]
+        include:
+          - os: "eeems/remarkable-toolchain:latest-rmpp"
+            release_arch: aarch64
+          - os: "eeems/remarkable-toolchain:latest-rm2"
+            release_arch: arm32
+    runs-on: ubuntu-latest
+
+    container:
+      image: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build AppLoad app
+        shell: bash
+        run: |
+          apt-get update
+          apt-get install -y qt5-qmake qtbase5-dev
+          cd appload-app/literm/
+          chmod +x build.sh
+          ./build.sh
+          tar -czf ../../literm-appload-app.tar.gz literm/
+          cd ../../
+      
+      - name: Build extension
+        run: |
+          export XOVI_REPO=/tmp/xovi
+          git clone https://github.com/asivery/xovi $XOVI_REPO
+          bash -c ". /opt/codex/*/*/environment-setup-*; qmake .; make"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: literm-${{ matrix.release_arch }}
+          path: |
+            literm.so
+            literm-appload-app.tar.gz
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./
+
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release_step
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ github.event.release.tag_name }}
+          tag_name: ${{ github.ref }}
+
+      - name: Upload extension (aarch64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_step.outputs.upload_url }}
+          asset_path: literm-aarch64/literm.so
+          asset_name: literm-aarch64.so
+          asset_content_type: application/octet-stream
+
+      - name: Upload AppLoad app (aarch64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_step.outputs.upload_url }}
+          asset_path: literm-aarch64/literm-appload-app.tar.gz
+          asset_name: literm-appload-app-aarch64.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Upload extension (arm32)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_step.outputs.upload_url }}
+          asset_path: literm-arm32/literm.so
+          asset_name: literm-arm32.so
+          asset_content_type: application/octet-stream
+
+      - name: Upload AppLoad app (arm32)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_step.outputs.upload_url }}
+          asset_path: literm-arm32/literm-appload-app.tar.gz
+          asset_name: literm-appload-app-arm32.tar.gz
+          asset_content_type: application/octet-stream
