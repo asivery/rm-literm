@@ -9,3 +9,7 @@ qrc_resources.cpp
 *.pure.qmd
 xovi.c
 xovi.h
+.qmake.stash
+literm.so
+pkg-config_wrapper.sh
+appload-app/literm/literm

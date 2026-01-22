@@ -106,12 +106,12 @@ Q_GLOBAL_STATIC(ColourTable, colourTable);
 
 QRgb Parser::fetchDefaultFgColor(bool backgroundWhite)
 {
-    return colourTable()->at(backgroundWhite ? 0 : 7);
+    return colourTable()->at(backgroundWhite ? 0 : 15);
 }
 
 QRgb Parser::fetchDefaultBgColor(bool backgroundWhite)
 {
-    return colourTable()->at(backgroundWhite ? 7 : 0);
+    return colourTable()->at(backgroundWhite ? 15 : 0);
 }
 
 bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, QString& errorString)
@@ -194,7 +194,7 @@ bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, 
         case 35:
         case 36:
         case 37:
-            if (state.colours.fg & Parser::BoldAttribute)
+            if (state.currentAttributes & Parser::BoldAttribute)
                 p += 8;
             state.colours.fg = colourTable()->at(p - 30);
             break;
@@ -229,7 +229,7 @@ bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, 
             state.colours.fg = colourTable()->at(p - 90 + 8);
             break;
 
-        case 100: // fg black, bold/bright, nonstandard
+        case 100: // bg black, bold/bright, nonstandard
         case 101:
         case 102:
         case 103:
@@ -237,7 +237,7 @@ bool Parser::handleSGR(Parser::SGRParserState& state, const QList<int>& params, 
         case 105:
         case 106:
         case 107:
-            state.colours.fg = colourTable()->at(p - 100 + 8);
+            state.colours.bg = colourTable()->at(p - 100 + 8);
             break;
 
         case 38:
