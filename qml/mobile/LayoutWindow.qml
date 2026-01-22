@@ -28,7 +28,7 @@ PopupWindow {
         Rectangle {
             color: Util.keyboardLayout === modelData ? "#909090" : "#404040"
             width: parent.width
-            height: selectButton.height+4*window.pixelRatio
+            height: selectButton.height+4
             border.width: 1
             border.color: "#ffffff"
             radius: window.radiusSmall
@@ -38,7 +38,7 @@ PopupWindow {
                 text: modelData
                 color: "#ffffff"
                 anchors.verticalCenter: parent.verticalCenter
-                x: 8*window.pixelRatio
+                x: 8
                 width: selectButton.x - x
                 font.pointSize: window.uiFontSize
                 elide: Text.ElideRight
@@ -48,7 +48,7 @@ PopupWindow {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Select"
-                width: 70*window.pixelRatio
+                width: 70
                 anchors.rightMargin: window.paddingSmall
                 onClicked: {
                     Util.keyboardLayout = modelData
@@ -65,12 +65,12 @@ PopupWindow {
         anchors.top: parent.top
         color: "#ffffff"
         text: "Keyboard layout"
-        font.pointSize: window.uiFontSize + 4*window.pixelRatio;
+        font.pointSize: window.uiFontSize + 4;
     }
 
     ListView {
         anchors.fill: parent
-        anchors.topMargin: titleText.height + 4*window.pixelRatio
+        anchors.topMargin: titleText.height + 4
         delegate: listDelegate
         model: layoutWindow.layouts
         spacing: window.paddingSmall

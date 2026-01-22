@@ -44,7 +44,7 @@ Rectangle {
         // decoration for user-defined command buttons
         visible: isShellCommand
         anchors.fill: parent
-        font.pointSize: 46*window.pixelRatio
+        font.pointSize: 46
         text: "$"
         color: "#305030"
     }

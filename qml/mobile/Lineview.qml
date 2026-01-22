@@ -33,7 +33,7 @@ Rectangle {
     border.color: "#909090"
     radius: window.radiusSmall
     width: parent.width
-    height: lineTextCol.height + 8*window.pixelRatio
+    height: lineTextCol.height + 8
 
     // TODO: in the future, consider using TextMetrics instead.
     Text {
@@ -60,8 +60,8 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: 2*window.pixelRatio
-        anchors.rightMargin: 2*window.pixelRatio
+        anchors.leftMargin: 2
+        anchors.rightMargin: 2
 
         Repeater {
             model: lines

@@ -28,7 +28,7 @@ PopupWindow {
         Rectangle {
             color: "#909090"
             width: parent.width
-            height: openButton.height+(4*window.pixelRatio)
+            height: openButton.height+(4)
             border.width: 1
             border.color: "#ffffff"
             radius: window.radiusSmall
@@ -38,7 +38,7 @@ PopupWindow {
                 text: modelData
                 color: "#ffffff"
                 anchors.verticalCenter: parent.verticalCenter
-                x: 8*window.pixelRatio
+                x: 8
                 width: openButton.x - x
                 font.pointSize: window.uiFontSize
                 elide: Text.ElideRight
@@ -49,7 +49,7 @@ PopupWindow {
                 anchors.right: copyButton.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.rightMargin: window.paddingSmall
-                width: 70*window.pixelRatio
+                width: 70
                 onClicked: {
                     Qt.openUrlExternally(modelData);
                 }
@@ -59,7 +59,7 @@ PopupWindow {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Copy"
-                width: 70*window.pixelRatio
+                width: 70
                 anchors.rightMargin: window.paddingSmall
                 onClicked: {
                     Util.copyTextToClipboard(modelData);
@@ -73,7 +73,7 @@ PopupWindow {
         anchors.centerIn: parent
         color: "#ffffff"
         text: "No URLs"
-        font.pointSize: window.uiFontSize + 4*window.pixelRatio
+        font.pointSize: window.uiFontSize + 4
     }
 
     ListView {

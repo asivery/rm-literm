@@ -48,7 +48,7 @@ Item {
         color: "#e0e0e0"
         anchors.left: parent.right
         anchors.leftMargin: menuWin.showing ? -width : 1
-        width: flickableContent.width + 22*window.pixelRatio;
+        width: flickableContent.width + 22;
         height: menuWin.height
 
         MouseArea {
@@ -70,20 +70,20 @@ Item {
             anchors.topMargin: window.scrollBarWidth
             anchors.bottomMargin: window.scrollBarWidth
             anchors.leftMargin: window.scrollBarWidth
-            anchors.rightMargin: 16*window.pixelRatio
+            anchors.rightMargin: 16
             contentHeight: flickableContent.height
 
             Column {
                 id: flickableContent
 
-                spacing: 12*window.pixelRatio
+                spacing: 12
 
                 Row {
                     id: menuBlocksRow
-                    spacing: 8*window.pixelRatio
+                    spacing: 8
 
                     Column {
-                        spacing: 12*window.pixelRatio
+                        spacing: 12
 
                         Row {
                             Button {
@@ -138,7 +138,7 @@ Item {
                                     Button {
                                         text: "<font size=\"+3\">+</font>"
                                         onClicked: {
-                                            Util.fontSize = Util.fontSize + window.pixelRatio
+                                            Util.fontSize = Util.fontSize + 1
                                             Util.notifyText(textrender.terminalSize.width + "×" + textrender.terminalSize.height);
                                         }
                                         width: window.buttonWidthHalf
@@ -147,7 +147,7 @@ Item {
                                     Button {
                                         text: "<font size=\"+3\">-</font>"
                                         onClicked: {
-                                            Util.fontSize = Util.fontSize - window.pixelRatio
+                                            Util.fontSize = Util.fontSize - 1
                                             Util.notifyText(textrender.terminalSize.width + "×" + textrender.terminalSize.height);
                                         }
                                         width: window.buttonWidthHalf

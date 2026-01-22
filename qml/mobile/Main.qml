@@ -22,8 +22,7 @@ import QtQuick.Window 2.0
 Item {
     id: root
 
-    width: 1620
-    height: 2160
+    anchors.fill: parent
 
     signal requestQuit
     property bool shouldEnableVKB: true
@@ -90,35 +89,34 @@ Item {
 
             property string fgcolor: Util.backgroundWhite ? "white" : "black"
             property string bgcolor: Util.backgroundWhite ? "white" : "#000000"
-            property int fontSize: 14*pixelRatio
+            property int fontSize: 14
 
             property int fadeOutTime: 80
             property int fadeInTime: 350
-            property real pixelRatio: root.width / 1620
 
             // layout constants
-            property int buttonWidthSmall: 60*pixelRatio
-            property int buttonWidthLarge: 180*pixelRatio
-            property int buttonWidthHalf: 90*pixelRatio
+            property int buttonWidthSmall: 60
+            property int buttonWidthLarge: 180
+            property int buttonWidthHalf: 90
 
-            property int buttonHeightSmall: 48*pixelRatio
-            property int buttonHeightLarge: 68*pixelRatio
+            property int buttonHeightSmall: 48
+            property int buttonHeightLarge: 68
 
-            property int headerHeight: 20*pixelRatio
+            property int headerHeight: 20
 
-            property int radiusSmall: 5*pixelRatio
-            property int radiusMedium: 10*pixelRatio
-            property int radiusLarge: 15*pixelRatio
+            property int radiusSmall: 5
+            property int radiusMedium: 10
+            property int radiusLarge: 15
 
-            property int paddingSmall: 5*pixelRatio
-            property int paddingMedium: 10*pixelRatio
+            property int paddingSmall: 5
+            property int paddingMedium: 10
 
-            property int fontSizeSmall: 14*pixelRatio
-            property int fontSizeLarge: 24*pixelRatio
+            property int fontSizeSmall: 14
+            property int fontSizeLarge: 24
 
-            property int uiFontSize: Util.uiFontSize * pixelRatio
+            property int uiFontSize: Util.uiFontSize
 
-            property int scrollBarWidth: 6*window.pixelRatio
+            property int scrollBarWidth: 6
 
             anchors.fill: parent
             color: bgcolor
@@ -313,8 +311,8 @@ Item {
             MouseArea {
                 //top right corner menu button
                 x: window.width - width
-                width: menuImg.width + 60*window.pixelRatio
-                height: menuImg.height + 30*window.pixelRatio
+                width: menuImg.width + 60
+                height: menuImg.height + 30
                 opacity: 0.5
                 onClicked: menu.showing = true
 
@@ -323,7 +321,6 @@ Item {
 
                     anchors.centerIn: parent
                     source: "qrc:/literm/icons/menu.png"
-                    scale: window.pixelRatio
                 }
             }
 
@@ -333,7 +330,6 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 visible: textrender.showBufferScrollIndicator
-                scale: window.pixelRatio
             }
 
             Timer {
@@ -365,7 +361,7 @@ Item {
                 anchors.centerIn: parent
                 color: "#ffffff"
                 opacity: 0
-                font.pointSize: 40*window.pixelRatio
+                font.pointSize: 40
 
                 Behavior on opacity {
                     id: textNotifyAnim
@@ -377,10 +373,10 @@ Item {
                 id: aboutDialog
 
                 text: {
-                    var str = "<font size=\"+3\">rMPP literm " + Util.versionString() + "</font><br>\n" +
+                    var str = "<font size=\"+3\">rM literm " + Util.versionString() + "</font><br>\n" +
                             "<font size=\"+1\">" +
-                            "<br>Source code:<br>\n<a href=\"https://github.com/asivery/rmpp-literm/\">https://github.com/asivery/rmpp-literm/</a>\n\n" +
-                            "<br>Original source code:<br>\n<a href=\"https://github.com/rburchell/literm/\">https://github.com/rburchell/literm/</a>\n\n" +
+                            "<br>Source code:<br>\n<a href=\"https://github.com/asivery/rm-literm\">https://github.com/asivery/rm-literm</a>\n\n" +
+                            "<br>Original source code:<br>\n<a href=\"https://github.com/rburchell/literm\">https://github.com/rburchell/literm</a>\n\n" +
                             "<br>Config files for adjusting settings are at:<br>\n" +
                             Util.configPath() + "/<br><br>\n"
                     if (textrender.terminalSize.width != 0 && textrender.terminalSize.height != 0) {
