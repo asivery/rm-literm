@@ -1,7 +1,7 @@
 # porting
 
-This version of literm has been ported to work with the rMPP tablet. It uses [xovi](https://github.com/asivery/xovi)
-to load itself into xochitl. It depends on the [qt-resource-rebuilder](https://github.com/asivery/rmpp-xovi-extensions/) extension.
+This version of literm has been ported to work with the rM tablets. It uses [xovi](https://github.com/asivery/xovi)
+to load itself into xochitl. It depends on the [qt-resource-rebuilder](https://github.com/asivery/rm-xovi-extensions/tree/master/qt-resource-rebuilder) extension.
 
 All the code responsible for merging into the system UI is stored in `literm.qmd`.
 
@@ -17,13 +17,13 @@ To change terminal settings, please tap the top-right hand corner of the screen.
 
 # installation
 
-To install this on your rMPP:
+To install this on your rM:
 
-- Install xovi ([instructions](https://github.com/asivery/rmpp-xovi-extensions/blob/master/INSTALL.MD))
+- Install xovi ([instructions](https://github.com/asivery/rm-xovi-extensions/tree/master?tab=readme-ov-file#to-install-xovi))
 - Download the `extensions.zip` release file from the aforementioned page
 - Copy over the `qt-resource-rebuilder.so` file from the zip file into `/home/root/xovi/extensions.d`
-- Follow the instructions on how to rebuild the hashtab ([instructions](https://github.com/asivery/rmpp-xovi-extensions/blob/master/INSTALL.MD))
-- Download `libliterm.so` from this repository's releases and copy it over to the same directory
+- Follow the instructions on how to rebuild the hashtab ([instructions](https://github.com/asivery/rm-xovi-extensions/tree/master?tab=readme-ov-file#to-update-hashtab-required-for-ui-mods))
+- Download `literm.so` (arm32 for rM1/rM2 and aarch64 for rMPP/rMPPM, make sure to rename it to `literm.so`) from this repository's releases and copy it over to the same directory
 - Run `xovi/start` over SSH to restart everything.
 
 I am not responsible for any damages you might end up doing to your device.
