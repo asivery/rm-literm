@@ -170,6 +170,12 @@ void TextRender::geometryChange(const QRectF& newGeometry, const QRectF& oldGeom
 {
     QQuickItem::geometryChange(newGeometry, oldGeometry);
     
+    // Create ScreenModeItem when geometry becomes valid
+    if (!m_screenModeItem && newGeometry.width() > 0 && newGeometry.height() > 0) {
+        createScreenModeItem();
+    }
+    
+    // Update size if it already exists
     if (m_screenModeItem && newGeometry.width() > 0 && newGeometry.height() > 0) {
         m_screenModeItem->setWidth(newGeometry.width());
         m_screenModeItem->setHeight(newGeometry.height());
