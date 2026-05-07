@@ -103,6 +103,7 @@ TextRender::TextRender(QQuickItem* parent)
 
 TextRender::~TextRender()
 {
+    delete m_screenModeItem;
 }
 
 const QStringList TextRender::printableLinesFromCursor(int lines)
@@ -124,6 +125,55 @@ void TextRender::componentComplete()
 {
     QQuickItem::componentComplete();
     m_terminal.init();
+    
+    if (width() > 0 && height() > 0) {
+        createScreenModeItem();
+    }
+}
+
+void TextRender::createScreenModeItem()
+{
+    QQmlEngine *engine = qmlEngine(this);
+    if (!engine) {
+        return;
+    }
+    
+    QString qmlCode = "import QtQuick 2.0\n"
+                      "import xofm.libs.epaper 1.0 as Epaper\n"
+                      "Epaper.ScreenModeItem { mode: Epaper.ScreenModeItem.Pen }";
+    
+    QQmlComponent component(engine);
+    component.setData(qmlCode.toUtf8(), QUrl());
+    
+    if (component.status() != QQmlComponent::Ready) {
+        return;
+    }
+    
+    QObject *obj = component.create(qmlContext(this));
+    if (!obj) {
+        return;
+    }
+    
+    m_screenModeItem = qobject_cast<QQuickItem*>(obj);
+    if (!m_screenModeItem) {
+        delete obj;
+        return;
+    }
+    
+    m_screenModeItem->setParentItem(this);
+    m_screenModeItem->setWidth(width());
+    m_screenModeItem->setHeight(height());
+    m_screenModeItem->setVisible(true);
+}
+
+void TextRender::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry)
+{
+    QQuickItem::geometryChange(newGeometry, oldGeometry);
+    
+    if (m_screenModeItem && newGeometry.width() > 0 && newGeometry.height() > 0) {
+        m_screenModeItem->setWidth(newGeometry.width());
+        m_screenModeItem->setHeight(newGeometry.height());
+    }
 }
 
 void TextRender::copy()

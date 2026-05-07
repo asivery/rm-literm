@@ -150,10 +150,12 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
     void timerEvent(QTimerEvent* event) override;
     void componentComplete() override;
+    void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
 
 private slots:
     void handleScrollBack(bool reset);
     void handleTitleChanged(const QString& title);
+    void createScreenModeItem();
 
 private:
     Q_DISABLE_COPY(TextRender)
@@ -221,6 +223,8 @@ private:
     int m_dispatch_timer;
     bool backgroundWhite;
     Terminal m_terminal;
+    
+    QQuickItem* m_screenModeItem = nullptr;
 };
 
 #endif // TEXTRENDER_H
