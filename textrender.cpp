@@ -20,6 +20,7 @@
 #include <QCursor>
 #include <QFontMetrics>
 #include <QGuiApplication>
+#include <QTimer>
 #include <cmath>
 
 #include "parser.h"
@@ -138,9 +139,10 @@ void TextRender::createScreenModeItem()
         return;
     }
     
+    // Start with UI mode for clean initial draw, then switch to Pen mode
     QString qmlCode = "import QtQuick 2.0\n"
                       "import xofm.libs.epaper 1.0 as Epaper\n"
-                      "Epaper.ScreenModeItem { mode: Epaper.ScreenModeItem.Pen }";
+                      "Epaper.ScreenModeItem { mode: Epaper.ScreenModeItem.UI }";
     
     QQmlComponent component(engine);
     component.setData(qmlCode.toUtf8(), QUrl());
@@ -164,6 +166,13 @@ void TextRender::createScreenModeItem()
     m_screenModeItem->setWidth(width());
     m_screenModeItem->setHeight(height());
     m_screenModeItem->setVisible(true);
+    
+    // Switch to Pen mode after 0.5s for fast subsequent updates
+    QTimer::singleShot(500, this, [this]() {
+        if (m_screenModeItem) {
+            m_screenModeItem->setProperty("mode", 0); // Pen mode
+        }
+    });
 }
 
 void TextRender::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry)
